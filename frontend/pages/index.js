@@ -28,6 +28,25 @@ const FileUpload = () => {
     }
   };
 
+  const handleButtonClick = (apiEndpoint) => {
+    fetch(`http://localhost:8080/${apiEndpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileNames: ["file1", "file2", "file3"] }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // handle response data
+        console.log("Response data:", data);
+      })
+      .catch((error) => {
+        // handle error
+        console.log("Error:", error);
+      });
+  };
+
   return (
     <div>
       <h1>モデル実行システム</h1>
@@ -47,13 +66,19 @@ const FileUpload = () => {
         <div style={{ color: isError ? "red" : "green" }}>{message}</div>
       )}
       <h2>step2　ファイル加工形式の選択</h2>
-      <button type="inner_join">INNER JOIN</button>
-      <br />
-      <br />
-      <button type="left_outer_join">LEFT OUTER JOIN</button>
-      <br />
-      <br />
-      <button type="right_outer_join">RIGHT OUTER JOIN</button>
+      <div>
+        <button onClick={() => handleButtonClick("innerJoin")}>
+          Inner Join
+        </button>
+        {"　　"}
+        <button onClick={() => handleButtonClick("rightOuterJoin")}>
+          Right Outer Join
+        </button>
+        {"　　"}
+        <button onClick={() => handleButtonClick("leftOuterJoin")}>
+          Left Outer Join
+        </button>
+      </div>
     </div>
   );
 };
