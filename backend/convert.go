@@ -57,6 +57,28 @@ func innerJoin(map1, map2 map[string]map[string]string) map[string]map[string]st
 
 	return resultMap
 }
+func leftOuterJoin(map1, map2 map[string]map[string]string) map[string]map[string]string {
+	resultMap := make(map[string]map[string]string)
+
+	for id, row := range map1 {
+		joinedRow := make(map[string]string)
+		for k, v := range row {
+			joinedRow[k] = v
+		}
+		if row2, ok := map2[id]; ok {
+			for k, v := range row2 {
+				joinedRow[k] = v
+			}
+		}
+		resultMap[id] = joinedRow
+	}
+
+	return resultMap
+}
+
+func rightOuterJoin(map1, map2 map[string]map[string]string) map[string]map[string]string {
+	return leftOuterJoin(map2, map1)
+}
 
 func writeMapToCSV(filename string, data map[string]map[string]string) error {
 	file, err := os.Create(filename)
@@ -98,16 +120,13 @@ func writeMapToCSV(filename string, data map[string]map[string]string) error {
 	return nil
 }
 
-func InnerJoinHandler(w http.ResponseWriter, r *http.Request) {
+func performJoin(w http.ResponseWriter, r *http.Request, fileNames []string, outputFile string, joinFunc func(map[string]map[string]string, map[string]map[string]string) map[string]map[string]string) {
 	if r.Method != "POST" {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Assume the file names are retrieved from the request
-	fileNames := []string{"customer.csv", "payment.csv", "other_info.csv"}
-
-	fmt.Println("Performing Inner Join on files:", fileNames)
+	fmt.Println("Performing Join operation on files:", fileNames)
 
 	data1, err := parseCSV(fileNames[0])
 	if err != nil {
@@ -129,44 +148,26 @@ func InnerJoinHandler(w http.ResponseWriter, r *http.Request) {
 	map2 := convertDataToMap(data2)
 	map3 := convertDataToMap(data3)
 
-	resultMap := innerJoin(map1, map2)
-	resultMap = innerJoin(resultMap, map3)
+	resultMap := joinFunc(map1, map2)
+	resultMap = joinFunc(resultMap, map3)
 
-	err = writeMapToCSV("innerJoinResult.csv", resultMap)
+	err = writeMapToCSV(outputFile, resultMap)
 	if err != nil {
 		http.Error(w, "Error writing result", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintln(w, "Successfully performed Inner Join and wrote result to innerJoinResult.csv")
+	// fmt.Fprintln(w, successMessage)
 }
 
-func RightOuterJoinHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Assume the file names are retrieved from the request
-	fileNames := []string{"customer.csv", "payment.csv", "other_info.csv"}
-
-	// Perform Right Outer Join Operation...
-	fmt.Println("Performing Right Outer Join on files:", fileNames)
-
-	w.Write([]byte("Successfully Performed Right Outer Join"))
+func InnerJoinHandler(w http.ResponseWriter, r *http.Request) {
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/innerJoinResult.csv", innerJoin)
 }
 
 func LeftOuterJoinHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/leftOuterJoinResult.csv", leftOuterJoin)
+}
 
-	// Assume the file names are retrieved from the request
-	fileNames := []string{"customer.csv", "payment.csv", "other_info.csv"}
-
-	// Perform Left Outer Join Operation...
-	fmt.Println("Performing Left Outer Join on files:", fileNames)
-
-	w.Write([]byte("Successfully Performed Left Outer Join"))
+func RightOuterJoinHandler(w http.ResponseWriter, r *http.Request) {
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/rightOuterJoinResult.csv", rightOuterJoin)
 }
