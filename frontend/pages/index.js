@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import styles from "../styles/FileUpload.module.css";
+import styles from "../styles/index.module.css";
 
 const FileUpload = () => {
   const [file1, setFile1] = useState(null);
@@ -37,14 +37,18 @@ const FileUpload = () => {
       },
       body: JSON.stringify({ fileNames: ["file1", "file2", "file3"] }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        // handle response data
-        console.log("Response data:", data);
+      .then((response) => {
+        if (response.status === 200) {
+          setMessage("Successfully performed Join operation");
+          setIsError(false);
+        } else {
+          setMessage("An error occurred while performing Join operation");
+          setIsError(true);
+        }
       })
       .catch((error) => {
-        // handle error
-        console.log("Error:", error);
+        setMessage("An error occurred while performing Join operation");
+        setIsError(true);
       });
   };
 
@@ -72,15 +76,6 @@ const FileUpload = () => {
           ファイルアップロード
         </button>
       </form>
-      {message && (
-        <div
-          className={`${styles.message} ${
-            isError ? styles.error : styles.success
-          }`}
-        >
-          {message}
-        </div>
-      )}
       <h2 className={`${styles.heading} ${styles.step2Title}`}>
         step2　ファイル加工形式の選択
       </h2>
@@ -104,6 +99,16 @@ const FileUpload = () => {
           Left Outer Join
         </button>
       </div>
+      <br />
+      {message && (
+        <div
+          className={`${styles.message} ${
+            isError ? styles.error : styles.success
+          }`}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 };

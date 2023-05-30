@@ -157,6 +157,10 @@ func performJoin(w http.ResponseWriter, r *http.Request, fileNames []string, out
 		return
 	}
 
+	// If we get this far, the operation was successful
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Successfully performed Join operation"))
+
 	// fmt.Fprintln(w, successMessage)
 }
 
