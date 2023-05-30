@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import styles from "../styles/FileUpload.module.css";
 
 const FileUpload = () => {
   const [file1, setFile1] = useState(null);
@@ -48,34 +49,58 @@ const FileUpload = () => {
   };
 
   return (
-    <div>
-      <h1>モデル実行システム</h1>
-      <h2>step1　ファイルアップロード</h2>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>モデル実行システム</h1>
+      <h2 className={styles.heading}>step1　ファイルアップロード</h2>
       <form onSubmit={submitFile}>
-        <input type="file" onChange={(e) => setFile1(e.target.files[0])} />
-        <br />
-        <input type="file" onChange={(e) => setFile2(e.target.files[0])} />
-        <br />
-        <input type="file" onChange={(e) => setFile3(e.target.files[0])} />
-        <br />
-        <br />
-        <button type="submit">ファイルアップロード</button>
+        <input
+          className={styles.inputFile}
+          type="file"
+          onChange={(e) => setFile1(e.target.files[0])}
+        />
+        <input
+          className={styles.inputFile}
+          type="file"
+          onChange={(e) => setFile2(e.target.files[0])}
+        />
+        <input
+          className={styles.inputFile}
+          type="file"
+          onChange={(e) => setFile3(e.target.files[0])}
+        />
+        <button className={styles.uploadButton} type="submit">
+          ファイルアップロード
+        </button>
       </form>
-      <br />
       {message && (
-        <div style={{ color: isError ? "red" : "green" }}>{message}</div>
+        <div
+          className={`${styles.message} ${
+            isError ? styles.error : styles.success
+          }`}
+        >
+          {message}
+        </div>
       )}
-      <h2>step2　ファイル加工形式の選択</h2>
+      <h2 className={`${styles.heading} ${styles.step2Title}`}>
+        step2　ファイル加工形式の選択
+      </h2>
       <div>
-        <button onClick={() => handleButtonClick("innerJoin")}>
+        <button
+          className={styles.joinButton}
+          onClick={() => handleButtonClick("innerJoin")}
+        >
           Inner Join
         </button>
-        {"　　"}
-        <button onClick={() => handleButtonClick("rightOuterJoin")}>
+        <button
+          className={styles.joinButton}
+          onClick={() => handleButtonClick("rightOuterJoin")}
+        >
           Right Outer Join
         </button>
-        {"　　"}
-        <button onClick={() => handleButtonClick("leftOuterJoin")}>
+        <button
+          className={styles.joinButton}
+          onClick={() => handleButtonClick("leftOuterJoin")}
+        >
           Left Outer Join
         </button>
       </div>
