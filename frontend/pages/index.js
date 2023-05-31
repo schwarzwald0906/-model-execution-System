@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import styles from "../styles/index.module.css";
+import Link from "next/link";
 
 const FileUpload = () => {
   const [file1, setFile1] = useState(null);
@@ -109,6 +110,9 @@ const FileUpload = () => {
           {message}
         </div>
       )}
+      <Link legacyBehavior href="/columnSelector">
+        <a>次へ</a>
+      </Link>
     </div>
   );
 };

@@ -10,10 +10,12 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/upload", uploadFiles)
+	mux.HandleFunc("/upload", UploadFiles)
 	mux.HandleFunc("/innerJoin", InnerJoinHandler)
 	mux.HandleFunc("/rightOuterJoin", RightOuterJoinHandler)
 	mux.HandleFunc("/leftOuterJoin", LeftOuterJoinHandler)
+	mux.HandleFunc("/getColumn", GetColumnNamesHandler)
+	// mux.HandleFunc("/removeColumns", RemoveColumns)
 
 	handler := cors.Default().Handler(mux)
 	http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {

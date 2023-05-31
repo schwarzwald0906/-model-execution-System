@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func uploadFiles(w http.ResponseWriter, r *http.Request) {
+func UploadFiles(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// ファイルを取得し、それぞれについて同じ処理を行います
 		i := 1

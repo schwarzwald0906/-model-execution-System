@@ -1,0 +1,71 @@
+/* FileUpload.module.css */
+
+.container {
+    text-align: left;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.heading {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.inputFile {
+    margin-bottom: 15px;
+}
+
+.uploadButton {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #008CBA;
+    /* Blue */
+    border: none;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.uploadButton:hover {
+    background-color: #007B9A;
+    /* Darker blue */
+}
+
+.step2Title {
+    margin-top: 40px;
+}
+
+.joinButton {
+    margin: 10px;
+    padding: 10px;
+    background-color: #f44336;
+    /* Red */
+    border: none;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.joinButton:hover {
+    background-color: #da251c;
+    /* Darker red */
+}
+
+.message {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+}
+
+.success {
+    color: green;
+}
