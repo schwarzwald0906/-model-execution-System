@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// CSVファイルからデータを読み込む関数
-func GetColumnNames() ([]map[string]string, error) {
+// CSVファイルからカラム名を読み込む関数
+func GetColumnNames() ([]string, error) {
 	file, err := os.Open("file/output/innerJoinResult.csv")
 	if err != nil {
 		return nil, err
@@ -16,41 +16,27 @@ func GetColumnNames() ([]map[string]string, error) {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
-	rawCSVdata, err := reader.ReadAll()
+	rawCSVdata, err := reader.Read() // ファイルの最初の行のみを読み込む
 	if err != nil {
 		return nil, err
 	}
 
 	// CSVのヘッダー(最初の行)を取得
-	headers := rawCSVdata[0]
+	headers := rawCSVdata
 
-	// ヘッダー以外のデータ部分を取得
-	dataRows := rawCSVdata[1:]
-
-	// データを格納するためのスライスを作成
-	var data []map[string]string
-	for _, row := range dataRows {
-		rowData := make(map[string]string)
-		for i, value := range row {
-			// 各値をヘッダーの名前でマッピング
-			rowData[headers[i]] = value
-		}
-		data = append(data, rowData)
-	}
-
-	return data, nil
+	return headers, nil
 }
 
 // APIエンドポイントのハンドラ
 func GetColumnNamesHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := GetColumnNames()
+	headers, err := GetColumnNames()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
+	json.NewEncoder(w).Encode(headers) // カラム名のみをJSONでエンコード
 }
 
 func RemoveColumns(w http.ResponseWriter, r *http.Request) {

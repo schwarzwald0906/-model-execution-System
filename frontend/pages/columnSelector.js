@@ -2,17 +2,36 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/columnSelector.module.css";
 import { getCustomerData } from "./api/customerData";
 
+// チェックボックスのコンポーネントを定義
+const CheckboxComponent = ({
+  name,
+  selectedVariables,
+  handleCheckboxChange,
+}) => (
+  <div>
+    <label>
+      <input
+        type="checkbox"
+        name={name}
+        checked={selectedVariables[name] || false}
+        onChange={handleCheckboxChange}
+      />
+      {name.charAt(0).toUpperCase() + name.slice(1)}
+    </label>
+  </div>
+);
+
 export default function ColumnSelector() {
-  const [customers, setCustomers] = useState([]);
+  const [columns, setColumns] = useState([]);
   const [selectedVariables, setSelectedVariables] = useState({});
 
   useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchColumns() {
       const data = await getCustomerData();
-      setCustomers(data);
+      setColumns(data);
     }
 
-    fetchCustomers();
+    fetchColumns();
   }, []);
 
   const handleCheckboxChange = (event) => {
@@ -26,32 +45,14 @@ export default function ColumnSelector() {
     <div className={styles.container}>
       <h1 className={styles.heading}>モデル実行システム</h1>
       <h2 className={styles.heading}>step3　項目選択</h2>
-      {customers.map((customer, index) => (
-        <div key={index}>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="age"
-                checked={selectedVariables["age"] || false}
-                onChange={handleCheckboxChange}
-              />
-              Age: {customer.age}
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="customer_rank"
-                checked={selectedVariables["customer_rank"] || false}
-                onChange={handleCheckboxChange}
-              />
-              Customer Rank: {customer.customer_rank}
-            </label>
-          </div>
-          {/* 他の項目も同様に追加... */}
-        </div>
+      {/* ここで列のリストをループしてチェックボックスを生成 */}
+      {columns.map((column) => (
+        <CheckboxComponent
+          key={column}
+          name={column}
+          selectedVariables={selectedVariables}
+          handleCheckboxChange={handleCheckboxChange}
+        />
       ))}
     </div>
   );
