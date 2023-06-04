@@ -165,13 +165,13 @@ func performJoin(w http.ResponseWriter, r *http.Request, fileNames []string, out
 }
 
 func InnerJoinHandler(w http.ResponseWriter, r *http.Request) {
-	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/innerJoinResult.csv", innerJoin)
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/joinResult.csv", innerJoin)
 }
 
 func LeftOuterJoinHandler(w http.ResponseWriter, r *http.Request) {
-	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/leftOuterJoinResult.csv", leftOuterJoin)
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/joinResult.csv", leftOuterJoin)
 }
 
 func RightOuterJoinHandler(w http.ResponseWriter, r *http.Request) {
-	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/rightOuterJoinResult.csv", rightOuterJoin)
+	performJoin(w, r, []string{"file/input/file1.csv", "file/input/file2.csv", "file/input/file3.csv"}, "file/output/joinResult.csv", rightOuterJoin)
 }

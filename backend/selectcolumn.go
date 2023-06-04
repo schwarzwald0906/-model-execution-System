@@ -40,7 +40,7 @@ func GetColumnNamesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveSelectedColumnsData(selectedColumns []string) error {
-	file, err := os.Open("file/output/innerJoinResult.csv")
+	file, err := os.Open("file/output/joinResult.csv")
 	if err != nil {
 		return err
 	}
