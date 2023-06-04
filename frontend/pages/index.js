@@ -110,8 +110,9 @@ const FileUpload = () => {
           {message}
         </div>
       )}
+      <br />
       <Link legacyBehavior href="/columnSelector">
-        <a>次へ</a>
+        <a>step3　項目選択</a>
       </Link>
     </div>
   );
