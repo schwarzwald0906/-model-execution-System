@@ -39,7 +39,6 @@ func GetColumnNamesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(headers) // カラム名のみをJSONでエンコード
 }
 
-// 選択されたカラムのデータを取得し、サーバー上にCSVとして保存
 func SaveSelectedColumnsData(selectedColumns []string) error {
 	file, err := os.Open("file/output/innerJoinResult.csv")
 	if err != nil {
@@ -54,16 +53,20 @@ func SaveSelectedColumnsData(selectedColumns []string) error {
 	}
 
 	headers := allRows[0]
-	var selectedRows [][]string
+	columnDataMap := make(map[string][]string)
 
 	for _, row := range allRows[1:] { // ヘッダー行を除いてループ
-		var selectedRow []string
 		for idx, header := range headers {
-			for _, selectedColumn := range selectedColumns {
-				if selectedColumn == header {
-					selectedRow = append(selectedRow, row[idx])
-				}
-			}
+			columnDataMap[header] = append(columnDataMap[header], row[idx])
+		}
+	}
+
+	var selectedRows [][]string
+
+	for i := 0; i < len(allRows)-1; i++ {
+		var selectedRow []string
+		for _, selectedColumn := range selectedColumns {
+			selectedRow = append(selectedRow, columnDataMap[selectedColumn][i])
 		}
 		selectedRows = append(selectedRows, selectedRow)
 	}

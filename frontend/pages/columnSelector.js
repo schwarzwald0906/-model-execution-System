@@ -1,25 +1,48 @@
 import React, { useEffect, useState } from "react";
 import styles from "../styles/columnSelector.module.css";
 import { getCustomerData } from "./api/customerData";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-// チェックボックスのコンポーネントを定義
 const CheckboxComponent = ({
   name,
   selectedVariables,
   handleCheckboxChange,
+  index,
 }) => (
-  <div>
-    <label>
-      <input
-        type="checkbox"
-        name={name}
-        checked={selectedVariables[name] || false}
-        onChange={handleCheckboxChange}
-      />
-      {name.charAt(0).toUpperCase() + name.slice(1)}
-    </label>
-  </div>
+  <Draggable draggableId={name} index={index}>
+    {(provided) => (
+      <div
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+      >
+        <label>
+          <input
+            type="checkbox"
+            name={name}
+            checked={selectedVariables[name] || false}
+            onChange={handleCheckboxChange}
+          />
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </label>
+      </div>
+    )}
+  </Draggable>
 );
+
+const saveSelectedColumnsData = async (selectedColumns) => {
+  const response = await fetch("http://localhost:8080/saveSelectedColumn", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(selectedColumns),
+  });
+
+  if (!response.ok) {
+    throw new Error("保存に失敗しました");
+  }
+};
 
 export default function ColumnSelector() {
   const [columns, setColumns] = useState([]);
@@ -41,29 +64,21 @@ export default function ColumnSelector() {
     });
   };
 
-  // 選択された列のデータをバックエンドに送り、サーバー上にCSVとして保存するためのAPIを呼び出す関数
-  const saveSelectedColumnsData = async (selectedColumns) => {
-    const response = await fetch("http://localhost:8080/saveSelectedColumn", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedColumns),
-    });
+  const handleOnDragEnd = (result) => {
+    if (!result.destination) return;
 
-    if (!response.ok) {
-      throw new Error("保存に失敗しました");
-    }
+    const items = Array.from(columns);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setColumns(items);
   };
 
-  // ボタンがクリックされたときに呼ばれる関数
   const handleConvertButtonClick = async () => {
-    // 選択された列名を取得
     const selectedColumns = Object.entries(selectedVariables)
       .filter(([_, isChecked]) => isChecked)
       .map(([column, _]) => column);
 
-    // 選択された列のデータをバックエンドに送り、サーバー上にCSVとして保存
     try {
       await saveSelectedColumnsData(selectedColumns);
       alert("データの保存に成功しました");
@@ -76,15 +91,24 @@ export default function ColumnSelector() {
     <div className={styles.container}>
       <h1 className={styles.heading}>モデル実行システム</h1>
       <h2 className={styles.heading}>step3　項目選択</h2>
-      {/* ここで列のリストをループしてチェックボックスを生成 */}
-      {columns.map((column) => (
-        <CheckboxComponent
-          key={column}
-          name={column}
-          selectedVariables={selectedVariables}
-          handleCheckboxChange={handleCheckboxChange}
-        />
-      ))}
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="columns">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {columns.map((column, index) => (
+                <CheckboxComponent
+                  key={column}
+                  name={column}
+                  selectedVariables={selectedVariables}
+                  handleCheckboxChange={handleCheckboxChange}
+                  index={index}
+                />
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
       <button onClick={handleConvertButtonClick}>変換</button>
     </div>
   );
