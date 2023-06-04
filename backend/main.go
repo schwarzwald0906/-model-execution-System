@@ -15,7 +15,7 @@ func main() {
 	mux.HandleFunc("/rightOuterJoin", RightOuterJoinHandler)
 	mux.HandleFunc("/leftOuterJoin", LeftOuterJoinHandler)
 	mux.HandleFunc("/getColumn", GetColumnNamesHandler)
-	// mux.HandleFunc("/removeColumns", RemoveColumns)
+	mux.HandleFunc("/saveSelectedColumn", SaveSelectedColumnsDataHandler)
 
 	handler := cors.Default().Handler(mux)
 	http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {

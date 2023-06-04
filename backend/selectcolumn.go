@@ -39,15 +39,65 @@ func GetColumnNamesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(headers) // カラム名のみをJSONでエンコード
 }
 
-func RemoveColumns(w http.ResponseWriter, r *http.Request) {
-	var columnNamesToRemove []string
-	err := json.NewDecoder(r.Body).Decode(&columnNamesToRemove)
+// 選択されたカラムのデータを取得し、サーバー上にCSVとして保存
+func SaveSelectedColumnsData(selectedColumns []string) error {
+	file, err := os.Open("file/output/innerJoinResult.csv")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		return err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	allRows, err := reader.ReadAll() // 全行読み込む
+	if err != nil {
+		return err
+	}
+
+	headers := allRows[0]
+	var selectedRows [][]string
+
+	for _, row := range allRows[1:] { // ヘッダー行を除いてループ
+		var selectedRow []string
+		for idx, header := range headers {
+			for _, selectedColumn := range selectedColumns {
+				if selectedColumn == header {
+					selectedRow = append(selectedRow, row[idx])
+				}
+			}
+		}
+		selectedRows = append(selectedRows, selectedRow)
+	}
+
+	// 選択されたカラムのデータをサーバー上にCSVとして保存
+	outputFile, err := os.Create("file/output/selectedData.csv")
+	if err != nil {
+		return err
+	}
+	defer outputFile.Close()
+
+	writer := csv.NewWriter(outputFile)
+	writer.Write(selectedColumns) // ヘッダー行を書き込む
+	writer.WriteAll(selectedRows) // データ行を書き込む
+	writer.Flush()
+
+	return nil
+}
+
+// APIエンドポイントのハンドラ
+func SaveSelectedColumnsDataHandler(w http.ResponseWriter, r *http.Request) {
+	// リクエストボディから選択された項目名を取得
+	var selectedColumns []string
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&selectedColumns); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// CSVを読み込み、選択された列を削除
-	// 省略: 選択された列を削除した新しいCSVを作成
-	// 省略: 新しいCSVを保存
+	err := SaveSelectedColumnsData(selectedColumns)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

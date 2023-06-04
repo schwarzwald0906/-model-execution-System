@@ -41,6 +41,37 @@ export default function ColumnSelector() {
     });
   };
 
+  // 選択された列のデータをバックエンドに送り、サーバー上にCSVとして保存するためのAPIを呼び出す関数
+  const saveSelectedColumnsData = async (selectedColumns) => {
+    const response = await fetch("http://localhost:8080/saveSelectedColumn", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedColumns),
+    });
+
+    if (!response.ok) {
+      throw new Error("保存に失敗しました");
+    }
+  };
+
+  // ボタンがクリックされたときに呼ばれる関数
+  const handleConvertButtonClick = async () => {
+    // 選択された列名を取得
+    const selectedColumns = Object.entries(selectedVariables)
+      .filter(([_, isChecked]) => isChecked)
+      .map(([column, _]) => column);
+
+    // 選択された列のデータをバックエンドに送り、サーバー上にCSVとして保存
+    try {
+      await saveSelectedColumnsData(selectedColumns);
+      alert("データの保存に成功しました");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.heading}>モデル実行システム</h1>
@@ -54,6 +85,7 @@ export default function ColumnSelector() {
           handleCheckboxChange={handleCheckboxChange}
         />
       ))}
+      <button onClick={handleConvertButtonClick}>変換</button>
     </div>
   );
 }
