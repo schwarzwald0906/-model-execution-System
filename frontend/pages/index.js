@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styles from "../styles/index.module.css";
 import Link from "next/link";
 
-const FileUpload = () => {
+export default function FileUpload() {
   const [file1, setFile1] = useState(null);
   const [file2, setFile2] = useState(null);
   const [file3, setFile3] = useState(null);
@@ -116,6 +116,4 @@ const FileUpload = () => {
       </Link>
     </div>
   );
-};
-
-export default FileUpload;
+}

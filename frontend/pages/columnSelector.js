@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../styles/columnSelector.module.css";
-import { getCustomerData } from "./api/customerData";
+import { getCustomerData, saveSelectedColumnsData } from "./api/customerData";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const CheckboxComponent = ({
@@ -29,20 +29,6 @@ const CheckboxComponent = ({
     )}
   </Draggable>
 );
-
-const saveSelectedColumnsData = async (selectedColumns) => {
-  const response = await fetch("http://localhost:8080/saveSelectedColumn", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(selectedColumns),
-  });
-
-  if (!response.ok) {
-    throw new Error("保存に失敗しました");
-  }
-};
 
 export default function ColumnSelector() {
   const [columns, setColumns] = useState([]);
