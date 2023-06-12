@@ -129,6 +129,10 @@ func performJoin(w http.ResponseWriter, r *http.Request, fileNames []string, out
 	fmt.Println("Performing Join operation on files:", fileNames)
 
 	data1, err := parseCSV(fileNames[0])
+
+	println("data1")
+	println(data1)
+
 	if err != nil {
 		http.Error(w, "Error reading file", http.StatusInternalServerError)
 		return
